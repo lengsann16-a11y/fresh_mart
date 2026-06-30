@@ -1,0 +1,47 @@
+{% load static %}
+<div class="product-card" data-category="{{ product.category }}">
+    <div class="product-image">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+        <span class="product-emoji">{{ product.emoji }}</span>
+        {% endif %}
+        {% if product.has_discount %}
+        <span class="discount-badge">-{{ product.discount_percent }}%</span>
+        {% endif %}
+        {% if product.is_organic %}
+        <span class="organic-badge">🌿 Organic</span>
+        {% endif %}
+        <div class="product-actions">
+            <a href="{{ product.get_absolute_url }}" class="product-action-btn" title="View Details">
+                <i class="fas fa-eye"></i>
+            </a>
+            <form action="{% url 'store:cart_add' product.id %}" method="post" class="add-to-cart-form">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="product-action-btn add-cart-btn" title="Add to Cart">
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="product-info">
+        <span class="product-category-tag">{{ product.category }}</span>
+        <h3 class="product-name">
+            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+        </h3>
+        <div class="product-price-row">
+            <span class="product-price">${{ product.price }}</span>
+            {% if product.has_discount %}
+            <span class="product-old-price">${{ product.old_price }}</span>
+            {% endif %}
+        </div>
+        <form action="{% url 'store:cart_add' product.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="btn-add-to-cart">
+                <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+        </form>
+    </div>
+</div>

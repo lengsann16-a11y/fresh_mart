@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-container">
+            <div class="auth-form-container">
+                <div class="auth-form-inner">
+                    <h2>Create Account</h2>
+                    <p class="auth-subtitle">Join Fresh Mart and start shopping fresh!</p>
+
+                    {% if form.errors %}
+                    <div class="auth-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Please correct the errors below.
+                    </div>
+                    {% endif %}
+
+                    <form method="post" class="auth-form">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_first_name"><i class="fas fa-user"></i> First Name</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <span class="form-error">{{ form.first_name.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_last_name"><i class="fas fa-user"></i> Last Name</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                <span class="form-error">{{ form.last_name.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_username"><i class="fas fa-at"></i> Username</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <span class="form-error">{{ form.username.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_email"><i class="fas fa-envelope"></i> Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <span class="form-error">{{ form.email.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_password1"><i class="fas fa-lock"></i> Password</label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                <span class="form-error">{{ form.password1.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_password2"><i class="fas fa-lock"></i> Confirm Password</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                <span class="form-error">{{ form.password2.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" required> I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+                    </form>
+
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+
+                    <div class="auth-switch">
+                        <p>Already have an account? <a href="{% url 'store:login' %}">Sign in</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-image register-image">
+                <div class="auth-image-content">
+                    <span class="auth-emoji">🍎🥬🍊</span>
+                    <h2>Join Our Community!</h2>
+                    <p>Create an account to enjoy exclusive benefits and personalized shopping experience.</p>
+                    <div class="auth-features">
+                        <div class="auth-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Save your favorites</span>
+                        </div>
+                        <div class="auth-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Order history</span>
+                        </div>
+                        <div class="auth-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Special discounts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

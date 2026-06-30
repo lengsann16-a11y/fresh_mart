@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-plus-circle"></i> {{ title }}</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'store:home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'store:product_list' %}">Products</a>
+            <span>/</span>
+            <span>{{ title }}</span>
+        </nav>
+    </div>
+</section>
+
+<section class="checkout-section">
+    <div class="container">
+        <div class="checkout-layout">
+            <div class="checkout-form-container" style="max-width: 800px; margin: 0 auto;">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h3><i class="fas fa-box"></i> Product Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product Name *</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                <span class="form-error">{{ form.name.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label>Emoji (if no image)</label>
+                                {{ form.emoji }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Category (Text) *</label>
+                                {{ form.category }}
+                            </div>
+                            <div class="form-group">
+                                <label>Category (Database Link)</label>
+                                {{ form.category_fk }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-dollar-sign"></i> Pricing & Stock</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Price ($) *</label>
+                                {{ form.price }}
+                            </div>
+                            <div class="form-group">
+                                <label>Old Price ($) - Optional</label>
+                                {{ form.old_price }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Stock Quantity *</label>
+                            {{ form.stock }}
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-image"></i> Image & Settings</h3>
+                        <div class="form-group">
+                            <label>Product Image</label>
+                            {{ form.image }}
+                            {% if form.instance.image %}
+                            <p class="mt-1">Current: <a href="{{ form.instance.image.url }}" target="_blank">View Image</a></p>
+                            {% endif %}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    {{ form.available }} Available for sale
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    {{ form.is_organic }} 🌿 Organic
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    {{ form.is_featured }} ⭐ Featured
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="display: none;">
+                            <label>Slug</label>
+                            {{ form.slug }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Save Product
+                        </button>
+                        <a href="{% url 'store:product_list' %}" class="btn btn-outline btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

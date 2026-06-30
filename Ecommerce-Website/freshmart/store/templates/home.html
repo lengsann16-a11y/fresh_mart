@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <div class="hero-content">
+        <span class="hero-badge">🌿 100% Organic & Fresh</span>
+        <h1 class="hero-title">Fresh & Organic<br>Grocery Store</h1>
+        <p class="hero-subtitle">Get the freshest fruits and vegetables delivered to your doorstep. Farm-fresh produce, handpicked for quality and taste.</p>
+        <div class="hero-buttons">
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-bag"></i> Shop Now
+            </a>
+            <a href="#featured" class="btn btn-secondary">
+                <i class="fas fa-eye"></i> Explore
+            </a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Happy Customers</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Organic Quality</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Support Available</div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-image">
+        <div class="floating-card card-1">🍎 Fresh Apples</div>
+        <div class="floating-card card-2">🥬 Green Veggies</div>
+        <div class="floating-card card-3">🍊 Juicy Oranges</div>
+        <div class="floating-card card-4">🥛 Farm Dairy</div>
+        <div class="hero-circle"></div>
+        <div class="hero-main-image">
+            <img src="{% static 'images/hero-grocery.png' %}" alt="Fresh groceries" onerror="this.style.display='none'">
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+{% if categories %}
+<section class="categories-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">Shop by Category</span>
+            <h2 class="section-title">Browse Our Categories</h2>
+            <p class="section-subtitle">Find exactly what you need from our wide range of categories</p>
+        </div>
+        <div class="categories-grid">
+            {% for category in categories %}
+            <a href="{% url 'store:product_list' %}?category={{ category.slug }}" class="category-card">
+                <div class="category-icon">
+                    {% if category.name == 'Fruits' %}🍎
+                    {% elif category.name == 'Vegetables' %}🥬
+                    {% elif category.name == 'Dairy' %}🧀
+                    {% elif category.name == 'Bakery' %}🍞
+                    {% elif category.name == 'Meat' %}🥩
+                    {% elif category.name == 'Beverages' %}🥤
+                    {% else %}🛒{% endif %}
+                </div>
+                <h3>{{ category.name }}</h3>
+                <span class="category-count">{{ category.products.count }} items</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Products Section -->
+{% if featured_products %}
+<section id="featured" class="products-section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">⭐ Featured</span>
+            <h2 class="section-title">Our Featured Products</h2>
+            <p class="section-subtitle">Handpicked fresh produce just for you</p>
+        </div>
+        <div class="products-grid">
+            {% for product in featured_products %}
+            {% include 'includes/product_card.html' with product=product %}
+            {% endfor %}
+        </div>
+        <div class="section-cta">
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary">View All Products <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Organic Banner -->
+<section class="organic-banner">
+    <div class="container">
+        <div class="organic-content">
+            <span class="section-badge">🌿 100% Organic</span>
+            <h2>Fresh From Farm to Your Table</h2>
+            <p>Our organic produce is grown without harmful pesticides or chemicals. We partner directly with local farmers to bring you the freshest and healthiest options.</p>
+            <a href="{% url 'store:product_list' %}?organic=true" class="btn btn-primary">Shop Organic <i class="fas fa-leaf"></i></a>
+        </div>
+        <div class="organic-image">
+            <div class="organic-emoji-display">🌾🥕🍅🥦🌽</div>
+        </div>
+    </div>
+</section>
+
+<!-- New Arrivals -->
+{% if new_products %}
+<section class="products-section bg-light">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">🆕 New Arrivals</span>
+            <h2 class="section-title">Freshly Added</h2>
+            <p class="section-subtitle">Check out our latest additions</p>
+        </div>
+        <div class="products-grid">
+            {% for product in new_products %}
+            {% include 'includes/product_card.html' with product=product %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">Why Choose Us</span>
+            <h2 class="section-title">Why Fresh Mart?</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-truck"></i></div>
+                <h3>Free Delivery</h3>
+                <p>Free shipping on orders over $50. Fast and reliable delivery right to your doorstep.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-undo-alt"></i></div>
+                <h3>30-Day Returns</h3>
+                <p>Not satisfied? Easy returns and exchanges within 30 days, no questions asked.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Quality Guarantee</h3>
+                <p>100% fresh produce guaranteed. We stand behind the quality of every product.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                <h3>Secure Payment</h3>
+                <p>Multiple secure payment options. Your transactions are always protected.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter">
+    <div class="container">
+        <div class="newsletter-content">
+            <span class="section-badge">📬 Newsletter</span>
+            <h2>Subscribe to Our Newsletter</h2>
+            <p>Get updates about new products, seasonal deals, and special offers</p>
+            <form class="newsletter-form" id="newsletterForm">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Enter your email address" required>
+                <button type="submit" class="btn btn-dark">Subscribe <i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-badge">💬 Reviews</span>
+            <h2 class="section-title">What Our Customers Say</h2>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p>"The freshest produce I've ever ordered online. The quality is amazing and delivery is always on time!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">👩</div>
+                    <div>
+                        <strong>Sarah Johnson</strong>
+                        <span>Regular Customer</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p>"I love the organic selection. It's so convenient to get farm-fresh vegetables delivered to my door."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">👨</div>
+                    <div>
+                        <strong>Michael Chen</strong>
+                        <span>Organic Enthusiast</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p>"Great prices, excellent quality, and fantastic customer service. Fresh Mart is my go-to grocery store!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">👩</div>
+                    <div>
+                        <strong>Emily Williams</strong>
+                        <span>Happy Shopper</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<section class="page-header order-page-header">
+    <div class="container">
+        <h1><i class="fas fa-box"></i> Order Details</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'store:home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'store:order_list' %}">Orders</a>
+            <span>/</span>
+            <span>{{ order.order_number }}</span>
+        </nav>
+    </div>
+</section>
+
+<section class="order-detail-section">
+    <div class="container">
+        <div class="order-detail-layout">
+            <!-- Order Info -->
+            <div class="order-info-card">
+                <div class="order-info-header">
+                    <div>
+                        <h2>Order {{ order.order_number }}</h2>
+                        <span class="order-date">Placed on {{ order.created|date:"F j, Y, g:i a" }}</span>
+                    </div>
+                    <div class="order-status-badge status-{{ order.status }}">
+                        <i class="fas fa-{% if order.status == 'delivered' %}check-circle{% elif order.status == 'shipped' %}shipping-fast{% elif order.status == 'cancelled' %}times-circle{% else %}clock{% endif %}"></i>
+                        {{ order.get_status_display }}
+                    </div>
+                </div>
+
+                <!-- Order Progress -->
+                <div class="order-progress">
+                    <div class="progress-step {% if order.status != 'cancelled' %}completed{% endif %}">
+                        <div class="progress-dot"></div>
+                        <span>Placed</span>
+                    </div>
+                    <div class="progress-step {% if order.status == 'processing' or order.status == 'shipped' or order.status == 'delivered' %}completed{% endif %}">
+                        <div class="progress-dot"></div>
+                        <span>Processing</span>
+                    </div>
+                    <div class="progress-step {% if order.status == 'shipped' or order.status == 'delivered' %}completed{% endif %}">
+                        <div class="progress-dot"></div>
+                        <span>Shipped</span>
+                    </div>
+                    <div class="progress-step {% if order.status == 'delivered' %}completed{% endif %}">
+                        <div class="progress-dot"></div>
+                        <span>Delivered</span>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="order-items-table">
+                    <div class="order-item-header">
+                        <span>Product</span>
+                        <span>Price</span>
+                        <span>Quantity</span>
+                        <span>Total</span>
+                    </div>
+                    {% for item in order.items.all %}
+                    <div class="order-item-row">
+                        <div class="order-item-product">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="order-item-img">
+                            {% else %}
+                            <span class="order-item-emoji">{{ item.product.emoji }}</span>
+                            {% endif %}
+                            <div>
+                                <strong>{{ item.product.name }}</strong>
+                                <span>{{ item.product.category }}</span>
+                            </div>
+                        </div>
+                        <span class="order-item-price">${{ item.price }}</span>
+                        <span class="order-item-qty">×{{ item.quantity }}</span>
+                        <span class="order-item-total">${{ item.get_cost|floatformat:2 }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="order-totals">
+                    <div class="order-total-row">
+                        <span>Subtotal</span>
+                        <span>${{ order.get_total_cost|floatformat:2 }}</span>
+                    </div>
+                    <div class="order-total-row">
+                        <span>Delivery</span>
+                        <span>{% if order.get_total_cost >= 50 %}FREE{% else %}$5.00{% endif %}</span>
+                    </div>
+                    <div class="order-total-row final-total">
+                        <span>Total</span>
+                        <span>${{ order.total_price|floatformat:2 }}</span>
+                    </div>
+                    <div class="order-total-row">
+                        <span>Payment Status</span>
+                        <span class="{% if order.paid %}paid-status{% else %}unpaid-status{% endif %}">
+                            {% if order.paid %}<i class="fas fa-check-circle"></i> Paid{% else %}<i class="fas fa-clock"></i> Pending{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Info -->
+            <div class="order-shipping-card">
+                <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
+                <div class="shipping-info">
+                    <p><strong>{{ order.first_name }} {{ order.last_name }}</strong></p>
+                    <p>{{ order.address }}</p>
+                    <p>{{ order.city }}, {{ order.state }} {{ order.zip_code }}</p>
+                    <p><i class="fas fa-phone"></i> {{ order.phone }}</p>
+                    <p><i class="fas fa-envelope"></i> {{ order.email }}</p>
+                </div>
+
+                <div class="order-actions">
+                    <a href="{% url 'store:order_list' %}" class="btn btn-outline btn-block">
+                        <i class="fas fa-arrow-left"></i> Back to Orders
+                    </a>
+                    <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-block">
+                        <i class="fas fa-shopping-bag"></i> Shop Again
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

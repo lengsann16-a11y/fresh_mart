@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fresh Mart{% endblock %} - Fresh Grocery Store</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="{% url 'store:home' %}" class="logo">
+                <span class="logo-icon">🥬</span>
+                <span class="logo-text">Fresh Mart</span>
+            </a>
+
+            <div class="nav-links" id="navLinks">
+                <a href="{% url 'store:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                <a href="{% url 'store:product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">Products</a>
+                                <a href="{% url 'store:product_create' %}" class="{% if request.resolver_match.url_name == 'product_create' %}active{% endif %}">
+                    <i class="fas fa-plus-circle"></i> Add Product
+                </a>
+                <a href="{% url 'store:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'store:profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">Profile</a>
+                {% endif %}
+            </div>
+
+            <div class="nav-icons">
+                <button class="icon-btn search-toggle" id="searchToggle">
+                    <i class="fas fa-search"></i>
+                </button>
+                <a href="{% url 'store:cart' %}" class="icon-btn cart-icon-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if cart_count > 0 %}
+                    <span class="cart-count">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+                {% if user.is_authenticated %}
+                <div class="user-menu">
+                    <button class="icon-btn user-toggle" id="userToggle">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <strong>{{ user.first_name|default:user.username }}</strong>
+                            <small>{{ user.email }}</small>
+                        </div>
+                        <a href="{% url 'store:profile' %}"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="{% url 'store:order_list' %}"><i class="fas fa-box"></i> My Orders</a>
+                        <a href="{% url 'store:cart' %}"><i class="fas fa-shopping-cart"></i> My Cart</a>
+                        <hr>
+                        <a href="{% url 'store:logout' %}" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'store:login' %}" class="icon-btn">
+                    <i class="fas fa-user"></i>
+                </a>
+                {% endif %}
+                <button class="icon-btn mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar" id="searchBar">
+            <form action="{% url 'store:search' %}" method="get">
+                <input type="text" name="q" placeholder="Search for fresh products..." value="{{ request.GET.q|default:'' }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <span class="logo-text">🥬 Fresh Mart</span>
+            <button class="close-mobile-menu" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="{% url 'store:home' %}">🏠 Home</a>
+            <a href="{% url 'store:product_list' %}">🛍️ Products</a>
+            <a href="{% url 'store:cart' %}">🛒 Cart ({{ cart_count }})</a>
+            <a href="{% url 'store:contact' %}">📞 Contact</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'store:profile' %}">👤 Profile</a>
+            <a href="{% url 'store:order_list' %}">📦 Orders</a>
+            <a href="{% url 'store:logout' %}">🚪 Logout</a>
+            {% else %}
+            <a href="{% url 'store:login' %}">🔑 Login</a>
+            <a href="{% url 'store:register' %}">📝 Register</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message-toast message-{{ message.tags }}">
+            <span class="message-text">{{ message }}</span>
+            <button class="message-close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span>🥬</span>
+                        <span class="logo-text">Fresh Mart</span>
+                    </div>
+                    <p>We provide fresh, organic, and high-quality grocery products directly from farms to your table. Quality you can trust.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'store:home' %}">Home</a></li>
+                        <li><a href="{% url 'store:product_list' %}">Products</a></li>
+                        <li><a href="{% url 'store:cart' %}">Cart</a></li>
+                        <li><a href="{% url 'store:contact' %}">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul>
+                        {% for cat in categories %}
+                        <li><a href="{% url 'store:product_list' %}?category={{ cat.slug }}">{{ cat.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Fresh Street, Food City</li>
+                        <li><i class="fas fa-phone"></i> +1 234 567 8900</li>
+                        <li><i class="fas fa-envelope"></i> info@freshmart.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Sat: 8AM - 10PM</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} Fresh Mart. All rights reserved. Made with 💚 for fresh food lovers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="{% url 'store:home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'store:product_list' %}">Products</a>
+            <span>/</span>
+            <span>{{ product.name }}</span>
+                        <!-- ADD THIS BLOCK -->
+                        {% if user.is_staff %}
+                        <div class="admin-actions mt-2 mb-3" style="display: flex; gap: 0.8rem;">
+                            <a href="{% url 'store:product_update' product.id %}" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-edit"></i> Edit Product
+                            </a>
+                            <a href="{% url 'store:product_delete' product.id %}" class="btn btn-sm btn-danger" style="background: #e74c3c; color: white; border: none;">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                        {% endif %}
+        </nav>
+    </div>
+</section>
+
+<section class="product-detail-section">
+    <div class="container">
+        <div class="product-detail-grid">
+            <!-- Product Image -->
+            <div class="product-detail-image">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                <div class="product-detail-emoji">{{ product.emoji }}</div>
+                {% endif %}
+                {% if product.has_discount %}
+                <span class="discount-badge large">-{{ product.discount_percent }}%</span>
+                {% endif %}
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-detail-info">
+                <span class="product-category-tag">{{ product.category }}</span>
+                {% if product.is_organic %}
+                <span class="organic-badge">🌿 Organic</span>
+                {% endif %}
+                <h1>{{ product.name }}</h1>
+
+                <div class="product-detail-rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <span class="rating-count">(4.8 / 5 - 128 reviews)</span>
+                </div>
+
+                <div class="product-detail-price">
+                    <span class="detail-price">${{ product.price }}</span>
+                    {% if product.has_discount %}
+                    <span class="detail-old-price">${{ product.old_price }}</span>
+                    <span class="detail-savings">Save ${{ product.old_price|add:product.price|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="product-detail-description">{{ product.description|default:"Fresh, high-quality product sourced directly from trusted farms. We ensure the best quality and freshness for every item we sell." }}</p>
+
+                <div class="product-detail-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-box"></i>
+                        <span>Stock: {{ product.stock }} available</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-truck"></i>
+                        <span>Free delivery on orders over $50</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-undo"></i>
+                        <span>30-day return policy</span>
+                    </div>
+                </div>
+
+                <form action="{% url 'store:cart_add' product.id %}" method="post" class="add-to-cart-detail-form">
+                    {% csrf_token %}
+                    <div class="quantity-selector">
+                        <button type="button" class="qty-btn qty-minus">-</button>
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+                        <button type="button" class="qty-btn qty-plus">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </form>
+
+                <div class="product-detail-features">
+                    <div class="detail-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>100% Fresh Guarantee</span>
+                    </div>
+                    <div class="detail-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Quality Tested</span>
+                    </div>
+                    <div class="detail-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Fast Delivery</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        {% if related_products %}
+        <div class="related-products">
+            <h2>Related Products</h2>
+            <div class="products-grid">
+                {% for product in related_products %}
+                {% include 'includes/product_card.html' with product=product %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const qtyMinus = document.querySelector('.qty-minus');
+    const qtyPlus = document.querySelector('.qty-plus');
+    const qtyInput = document.querySelector('.qty-input');
+
+    if (qtyMinus && qtyPlus && qtyInput) {
+        qtyMinus.addEventListener('click', function() {
+            let val = parseInt(qtyInput.value);
+            if (val > 1) qtyInput.value = val - 1;
+        });
+        qtyPlus.addEventListener('click', function() {
+            let val = parseInt(qtyInput.value);
+            let max = parseInt(qtyInput.max);
+            if (val < max) qtyInput.value = val + 1;
+        });
+    }
+});
+</script>
+{% endblock %}

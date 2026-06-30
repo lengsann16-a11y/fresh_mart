@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<section class="page-header cart-page-header">
+    <div class="container">
+        <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'store:home' %}">Home</a>
+            <span>/</span>
+            <span>Cart</span>
+        </nav>
+    </div>
+</section>
+
+<section class="cart-section">
+    <div class="container">
+        {% if cart_items %}
+        <div class="cart-layout">
+            <!-- Cart Items -->
+            <div class="cart-items">
+                <div class="cart-header-row">
+                    <span class="cart-col-product">Product</span>
+                    <span class="cart-col-price">Price</span>
+                    <span class="cart-col-qty">Quantity</span>
+                    <span class="cart-col-total">Total</span>
+                    <span class="cart-col-action">Action</span>
+                </div>
+
+                {% for item in cart_items %}
+                <div class="cart-item-row">
+                    <div class="cart-col-product">
+                        <div class="cart-item-image">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            {% else %}
+                            <span class="cart-item-emoji">{{ item.product.emoji }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="cart-item-info">
+                            <h4><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></h4>
+                            <span class="cart-item-category">{{ item.product.category }}</span>
+                        </div>
+                    </div>
+                    <div class="cart-col-price">
+                        ${{ item.price }}
+                    </div>
+                    <div class="cart-col-qty">
+                        <form action="{% url 'store:cart_update' item.product.id %}" method="post" class="qty-form">
+                            {% csrf_token %}
+                            <button type="submit" name="quantity" value="{{ item.quantity|add:"-1" }}" class="qty-btn qty-minus">-</button>
+                            <span class="qty-display">{{ item.quantity }}</span>
+                            <button type="submit" name="quantity" value="{{ item.quantity|add:"1" }}" class="qty-btn qty-plus">+</button>
+                        </form>
+                    </div>
+                    <div class="cart-col-total">
+                        ${{ item.total|floatformat:2 }}
+                    </div>
+                    <div class="cart-col-action">
+                        <a href="{% url 'store:cart_remove' item.product.id %}" class="remove-btn" title="Remove item">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal ({{ cart_items|length }} items)</span>
+                    <span>${{ cart_total|floatformat:2 }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery</span>
+                    <span>{% if cart_total >= 50 %}<span class="free-delivery">FREE</span>{% else %}$5.00{% endif %}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Estimated Tax</span>
+                    <span>${{ cart_total|floatformat:2 }}% -- $0.00</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span>${% if cart_total >= 50 %}{{ cart_total|floatformat:2 }}{% else %}{{ cart_total|add:5|floatformat:2 }}{% endif %}</span>
+                </div>
+
+                {% if cart_total < 50 %}
+                <div class="free-delivery-note">
+                    <i class="fas fa-info-circle"></i> Add ${{ cart_total|add:"-50"|floatformat:2 }} more for free delivery!
+                </div>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'store:checkout' %}" class="btn btn-primary btn-block">
+                    <i class="fas fa-lock"></i> Proceed to Checkout
+                </a>
+                {% else %}
+                <a href="{% url 'store:login' %}?next={% url 'store:checkout' %}" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login to Checkout
+                </a>
+                {% endif %}
+
+                <a href="{% url 'store:cart_clear' %}" class="btn btn-outline btn-block">
+                    <i class="fas fa-trash"></i> Clear Cart
+                </a>
+                <a href="{% url 'store:product_list' %}" class="continue-shopping">
+                    <i class="fas fa-arrow-left"></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added anything to your cart yet. Browse our products and find something you love!</p>
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-bag"></i> Start Shopping
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

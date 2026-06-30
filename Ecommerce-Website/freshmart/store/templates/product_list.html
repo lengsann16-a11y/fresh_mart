@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<section class="page-header products-page-header">
+    <div class="container">
+        <h1>Our Products</h1>
+        <p>Fresh, organic, and handpicked for you</p>
+        <nav class="breadcrumb">
+            <a href="{% url 'store:home' %}">Home</a>
+            <span>/</span>
+            <span>Products</span>
+        </nav>
+    </div>
+</section>
+
+<section class="products-page">
+    <div class="container">
+        <div class="products-layout">
+            <!-- Sidebar Filters -->
+            <aside class="products-sidebar">
+                <div class="sidebar-widget">
+                    <h3>Categories</h3>
+                    <ul class="category-filter-list">
+                        <li>
+                            <a href="{% url 'store:product_list' %}" class="{% if not current_category %}active{% endif %}">
+                                All Products
+                            </a>
+                        </li>
+                        {% for cat in categories %}
+                        <li>
+                            <a href="{% url 'store:product_list' %}?category={{ cat.slug }}" 
+                               class="{% if current_category == cat.slug %}active{% endif %}">
+                                {{ cat.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>Filter by</h3>
+                    <div class="filter-option">
+                        <a href="{% url 'store:product_list' %}?organic=true" class="filter-link">
+                            <i class="fas fa-leaf"></i> Organic Only
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>Sort By</h3>
+                    <select class="sort-select" onchange="window.location.href=this.value">
+                        <option value="{% url 'store:product_list' %}?sort=-created" {% if sort_by == '-created' %}selected{% endif %}>Newest First</option>
+                        <option value="{% url 'store:product_list' %}?sort=price" {% if sort_by == 'price' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="{% url 'store:product_list' %}?sort=-price" {% if sort_by == '-price' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="{% url 'store:product_list' %}?sort=name" {% if sort_by == 'name' %}selected{% endif %}>Name A-Z</option>
+                    </select>
+                </div>
+            </aside>
+
+            <!-- Products Grid -->
+            <div class="products-main">
+                {% if search_query %}
+                <div class="search-results-info">
+                    <p>Showing results for "<strong>{{ search_query }}</strong>" — {{ products|length }} products found</p>
+                </div>
+                {% endif %}
+
+                {% if products %}
+                <div class="products-grid">
+                    {% for product in products %}
+                    {% include 'includes/product_card.html' with product=product %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <h3>No products found</h3>
+                    <p>Try adjusting your filters or search terms</p>
+                    <a href="{% url 'store:product_list' %}" class="btn btn-primary">View All Products</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

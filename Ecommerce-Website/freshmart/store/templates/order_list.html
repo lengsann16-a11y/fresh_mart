@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-box"></i> My Orders</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'store:home' %}">Home</a>
+            <span>/</span>
+            <span>Orders</span>
+        </nav>
+    </div>
+</section>
+
+<section class="orders-list-section">
+    <div class="container">
+        {% if orders %}
+        <div class="orders-grid">
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-card-info">
+                    <h3><a href="{% url 'store:order_detail' order.id %}">{{ order.order_number }}</a></h3>
+                    <div class="order-card-meta">
+                        <span><i class="fas fa-calendar"></i> {{ order.created|date:"M j, Y, g:i a" }}</span>
+                        <span><i class="fas fa-box"></i> {{ order.items.count }} items</span>
+                        <span class="order-status-badge status-{{ order.status }}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="order-card-right">
+                    <div class="order-card-total">${{ order.total_price|floatformat:2 }}</div>
+                    <a href="{% url 'store:order_detail' order.id %}" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h2>No orders yet</h2>
+            <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
+            <a href="{% url 'store:product_list' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-bag"></i> Start Shopping
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
